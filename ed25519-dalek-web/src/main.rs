@@ -3,15 +3,14 @@ use std::string::String;
 extern crate yew;
 use yew::{html, Component, ComponentLink, Html, Renderable, ShouldRender};
 
-extern crate rand;
-use rand::{Rng, SeedableRng, StdRng};
-
 extern crate bip39;
 use bip39::{Mnemonic, Language};
 
+extern crate rand;
+use rand::{SeedableRng, StdRng};
+
 extern crate ed25519_dalek;
-use ed25519_dalek::Keypair;
-use ed25519_dalek::Signature;
+use ed25519_dalek::{Keypair};
 
 extern crate hex;
 
@@ -19,7 +18,7 @@ struct Model {
     mnemonic: Option<Mnemonic>,
     seed: String,
     error: String,
-    keyPair: Option<Keypair>,
+    key_pair: Option<Keypair>,
 }
 
 enum Msg {
@@ -38,7 +37,7 @@ impl Component for Model {
             mnemonic: None,
             seed: "".into(),
             error: "".into(),
-            keyPair: None,
+            key_pair: None,
         }
     }
 
@@ -50,12 +49,14 @@ impl Component for Model {
                     self.seed = "".into();
                     self.mnemonic = None;
                     self.error = "".into();
+                    self.update_key_pair();
                 } else {
                     match Mnemonic::from_phrase(val, Language::English) {
                         Ok(b) => {
                             self.seed = hex::encode(b.entropy());
                             self.mnemonic = Some(b);
                             self.error = "".into();
+                            self.update_key_pair();
                         },
                         Err(e) => {
                             self.error = e.to_string();
@@ -69,6 +70,7 @@ impl Component for Model {
                     self.seed = "".into();
                     self.mnemonic = None;
                     self.error = "".into();
+                    self.update_key_pair();
                 } else {
                     match hex::decode(&val) {
                         Ok(entropy) => match Mnemonic::from_entropy(entropy.as_slice(), Language::English) {
@@ -76,6 +78,7 @@ impl Component for Model {
                                 self.seed = val;
                                 self.mnemonic = Some(b);
                                 self.error = "".into();
+                                self.update_key_pair();
                             },
                             Err(e) => {
                                 self.error = e.to_string();
@@ -102,7 +105,7 @@ impl Model {
         array.copy_from_slice(data.as_slice()); 
         let mut rng: StdRng = SeedableRng::from_seed(array);
         let kp = Keypair::generate(&mut rng);
-        self.keyPair = Some(kp);
+        self.key_pair = Some(kp);
     }
 }
 
