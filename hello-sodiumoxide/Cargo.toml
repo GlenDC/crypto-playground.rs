@@ -1,0 +1,11 @@
+[package]
+name = "hello-sodiumoxide"
+version = "0.1.0"
+authors = ["Glen De Cauwsemaecker <contact@glendc.com>"]
+edition = "2018"
+
+[dependencies]
+tiny-bip39 = "0.6.1"
+sodiumoxide = "0.2.1"
+clap = "~2.32"
+hex = "0.3.2"
